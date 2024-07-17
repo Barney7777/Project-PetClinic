@@ -6,8 +6,6 @@ pipeline {
         AWS_DEFAULT_REGION = "ap-southeast-2"
         REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/"
         IMAGE_TAG = "${BUILD_NUMBER}"
-        SONARSCANNER = 'sonar-scanner'
-        SONARSERVER = 'sonar-server'
     }
 
     stages {
@@ -64,13 +62,17 @@ pipeline {
 
         stage ('Code Quality Check') {
             environment {
-                scannerHome = tool "${SONARSCANNER}"
+                SONAR_TOKEN = credentials("SONAR_TOKEN")
             }
 
             steps {
-                 withSonarQubeEnv("${SONARSERVER}"){
-                    sh "mvn -U clean install sonar:sonar"
-                 }
+                script {
+                    echo "sonarcloud scanning"
+                    sh 'mvn verify sonar:sonar \
+                    -Dsonar.host.url=https://sonarcloud.io \
+                    -Dsonar.organization=petclinic-spring-project \
+                    -Dsonar.projectKey=petclinic'
+                }
             }
         }
 
