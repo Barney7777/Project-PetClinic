@@ -62,21 +62,33 @@ pipeline {
         //     }
         // }
 
-        stage ('Code Quality Test') {
+        stage ('Code Quality Check') {
             environment {
                 scannerHome = tool "${SONARSCANNER}"
             }
 
             steps {
                  withSonarQubeEnv("${SONARSERVER}"){
-                    sh '''${scannerHome}/bin/sonar-scanner \
-                   -Dsonar.organization=petclinic-spring-project \
-                   -Dsonar.projectKey=petclinic \
-                   -Dsonar.sources=. \
-                   -Dsonar.host.url=https://sonarcloud.io'''
+                    sh "mvn -U clean install sonar:sonar"
                  }
             }
         }
+
+        // stage ('Code Quality Test') {
+        //     environment {
+        //         scannerHome = tool "${SONARSCANNER}"
+        //     }
+
+        //     steps {
+        //          withSonarQubeEnv("${SONARSERVER}"){
+        //             sh '''${scannerHome}/bin/sonar-scanner \
+        //            -Dsonar.organization=petclinic-spring-project \
+        //            -Dsonar.projectKey=petclinic \
+        //            -Dsonar.sources=. \
+        //            -Dsonar.host.url=https://sonarcloud.io'''
+        //          }
+        //     }
+        // }
 
         // stage ('Docker Image Build and Tag') {
         //     steps {
